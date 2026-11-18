@@ -207,17 +207,28 @@
     #entry h1{font-size:26px}
     #entry p{display:none}
     #card .say{display:none}
-    #card{flex-wrap:wrap;bottom:18px}
+    #card{flex-wrap:wrap;left:12px;right:68px;width:auto;bottom:150px;padding:10px 12px;transform:translateY(calc(100% + 170px))}
+    #card.show{transform:translateY(0)}
+    body.focusing #card{left:12px;right:12px;width:auto;bottom:12px}
     #card .no{display:none}
-    #card .btns{display:grid;grid-template-columns:1fr 1fr;width:100%}
-    #card .btns .btn{flex:1;max-width:none}
+    #card .t{font-size:16px}
+    #card .btns{display:grid;grid-template-columns:1fr 1fr;width:100%;gap:6px}
+    #card .btns .btn{flex:1;max-width:none;padding:8px 6px;font-size:13px}
+    #joy{left:14px;bottom:28px;width:110px;height:110px}
+    #joy i{left:30px;top:30px}
+    #dock{right:12px;bottom:28px;flex-direction:column-reverse;flex-wrap:nowrap;align-items:flex-end;max-width:none}
+    #dock .btn{font-size:0;gap:0;width:46px;height:46px;padding:0;border-radius:50%}
+    #dock .btn svg.i{width:20px;height:20px}
+    body.focusing #joy, body.focusing #dock{display:none !important}
+    #zone{top:124px}
+    #toast{top:178px;max-width:calc(100vw - 32px);text-align:center}
+    #howto{bottom:150px}
     #help-btn{top:104px}
     #help{top:152px}
     #who{flex-wrap:wrap;max-width:calc(100vw - 150px);font-size:13px;gap:6px 12px}
     #minimap{transform:scale(.65);transform-origin:top right}
-    #chatlog{bottom:170px}
-    #dock{bottom:110px}
-    #talk-menu{bottom:156px}
+    #chatlog{bottom:auto;top:230px}
+    #talk-menu{right:68px;bottom:28px}
   }
 </style>
 </head>
@@ -251,10 +262,10 @@
 </div>
 <div id="chatlog" class="hud" aria-live="polite"></div>
 <div id="dock" class="hud">
-<button id="sit-btn" class="panel btn" hidden><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 11h14M6 11v8M18 11v8M7 11V6h10v5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><span>앉아서 쉬기</span></button>
-<button id="guide-btn" class="panel btn" aria-haspopup="dialog"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2zM9 4v14M15 6v14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>안내서</button>
-<button id="run-btn" class="panel btn" aria-pressed="false"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7l5 5-5 5M12 7l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>빨리 걷기</button>
-<button id="talk-btn" class="panel btn" aria-expanded="false" aria-controls="talk-menu"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>말 걸기</button>
+<button id="sit-btn" class="panel btn" hidden aria-label="앉아서 쉬기" title="앉아서 쉬기"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 11h14M6 11v8M18 11v8M7 11V6h10v5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><span>앉아서 쉬기</span></button>
+<button id="guide-btn" class="panel btn" aria-haspopup="dialog" aria-label="안내서" title="안내서"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2zM9 4v14M15 6v14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>안내서</button>
+<button id="run-btn" class="panel btn" aria-pressed="false" aria-label="빨리 걷기" title="빨리 걷기"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7l5 5-5 5M12 7l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>빨리 걷기</button>
+<button id="talk-btn" class="panel btn" aria-expanded="false" aria-controls="talk-menu" aria-label="말 걸기" title="말 걸기"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>말 걸기</button>
 </div>
 <div id="talk-menu" class="hud panel" hidden></div>
 <div id="demo-badge" class="hud" hidden>체험 모드 — 투표가 이 기기에만 저장됩니다</div>
@@ -364,7 +375,7 @@ const CONFIG = {
   STAMPS_NEEDED: 3,     // 투표권이 열리는 스탬프 수
   STAMP_SECONDS: 8,     // 한 작품을 이만큼(초) 써 봐야 스탬프
 };
-const VERSION = 'v2.7';
+const VERSION = 'v2.8';
 
 // ───────────── 전시장 평면도 (한 칸 = 3m) ─────────────
 // # 벽  . 바닥  S 입구  B 작품(벽에 걸림)  T 금화  R 순위판  W 전시 제목 벽
@@ -1627,7 +1638,7 @@ $('sit-btn').onclick = () => {
 };
 function updateSit() {
   const b = $('sit-btn'); b.hidden = !(seat || nearBench) || !!focus;
-  const label = seat ? '일어나기' : '앉아서 쉬기'; if (b.lastChild.textContent !== label) b.lastChild.textContent = label;
+  const label = seat ? '일어나기' : '앉아서 쉬기'; if (b.lastChild.textContent !== label) { b.lastChild.textContent = label; b.setAttribute('aria-label', label); b.title = label; }
 }
 // 빨리 걷기: 누르면 켜지고 다시 누르면 꺼짐 (폰에서도 쓸 수 있게)
 let running = false;
