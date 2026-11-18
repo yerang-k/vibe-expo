@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>교사 관리 · 바이브코딩 작품전</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700&display=swap">
+<style>
+  :root{ --ink:#1b1a18; --paper:#f7f5f1; --muted:#6f6a62; --rule:#d9d3c8; --accent:#a8462b; --ok:#3f6b4f; --wait:#8a6d1d; --serif:"Noto Serif KR",serif; }
+  *{box-sizing:border-box}
+  body{margin:0;background:#efebe4;color:var(--ink);font-family:Pretendard,"Noto Sans KR",system-ui,sans-serif;word-break:keep-all;line-height:1.6}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+  button{font:inherit;cursor:pointer;color:inherit}
+  a{color:inherit}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 16px}
+  header{border-bottom:1px solid var(--rule);background:var(--paper)}
+  header .wrap{display:flex;align-items:center;gap:16px;padding-top:14px;padding-bottom:14px;flex-wrap:wrap}
+  header .k{font-size:11px;letter-spacing:5px;color:var(--muted)}
+  header h1{margin:0;font-family:var(--serif);font-size:22px}
+  header .sp{flex:1}
+  .btn{border:1px solid var(--ink);background:transparent;padding:8px 14px;font-weight:600;font-size:14px;border-radius:2px;display:inline-flex;gap:6px;align-items:center;justify-content:center;text-decoration:none;white-space:nowrap}
+  .btn.main{background:var(--ink);color:var(--paper)}
+  .btn.danger{border-color:var(--accent);color:var(--accent)}
+  .btn.sm{padding:4px 10px;font-size:13px}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  main{padding:24px 0 60px}
+  h2{font-family:var(--serif);font-size:22px;margin:0}
+  .panel{background:var(--paper);border:1px solid var(--rule);padding:22px}
+  .empty{text-align:center;padding:40px 20px}
+  .empty p{color:#4a463f}
+  code{background:#fff;border:1px solid var(--rule);padding:2px 6px;font-size:13px;word-break:break-all}
+  /* 목록 머리: 탭 + 투표 상태 */
+  .head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+  .tabs{display:flex;gap:4px}
+  .tabs button{border:1px solid var(--rule);background:var(--paper);padding:6px 12px;font-size:14px;font-weight:600;color:var(--muted);border-radius:2px}
+  .tabs button[aria-pressed=true]{border-color:var(--ink);color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+  .vote{display:flex;align-items:center;gap:10px;font-size:14px;margin-left:auto}
+  .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:1px}
+  /* 작품 카드 — 한 함수(workCard)에서만 그린다 */
+  .list{display:grid;gap:12px}
+  .card{display:grid;grid-template-columns:150px 1fr auto;gap:18px;align-items:center;background:var(--paper);border:1px solid var(--rule);padding:14px}
+  .cover{position:relative;aspect-ratio:16/10;background:#f4f1ea;overflow:hidden;border:4px solid #141312}
+  .cover svg{position:absolute;inset:0;width:100%;height:100%}
+  .badge{display:inline-block;font-size:12px;font-weight:700;padding:1px 8px;border:1px solid currentColor;margin-right:6px}
+  .badge.wait{color:var(--wait)}.badge.ok{color:var(--ok)}
+  .card h3{margin:2px 0 0;font-family:var(--serif);font-size:18px;line-height:1.35}
+  .card .by{color:var(--muted);font-size:13px}
+  .card .desc{font-size:14px;margin:4px 0 0;color:#3a372f}
+  .side{display:grid;gap:8px;justify-items:end;text-align:right}
+  .stk{font-size:13px;color:var(--muted)}
+  .stk b{font-size:20px;color:var(--ink);font-family:var(--serif)}
+  .ord{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
+  .ord input{width:56px;font:inherit;font-size:14px;padding:3px 6px;border:1px solid var(--rule);background:#fff;text-align:center}
+  .row{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+  /* 부문상 */
+  .awards{margin-top:30px}
+  .awards h2{font-size:17px;margin-bottom:6px}
+  .awards .note{font-size:13px;color:#4a463f;margin:0 0 12px}
+  .aw-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+  .aw{background:var(--paper);border:1px solid var(--rule);padding:14px 16px}
+  .aw h3{margin:0 0 2px;font-family:var(--serif);font-size:17px}
+  .aw .how{font-size:12px;color:var(--muted);margin-bottom:10px}
+  .aw ol{margin:0;padding-left:20px;font-size:14px}
+  .aw li{margin:3px 0}
+  .aw li.win{font-weight:700}
+  .aw li.win::after{content:' — 수상';color:var(--accent);font-weight:700}
+  .aw li.skip{color:var(--muted);text-decoration:line-through}
+  .aw .none{font-size:13px;color:var(--muted)}
+  .btn[data-act=prompt][aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:#fff}
+  /* 도구 (목록 아래) */
+  .tools{margin-top:30px}
+  .tools h2{font-size:17px;margin-bottom:10px}
+  .tool{display:flex;align-items:center;gap:14px;justify-content:space-between;padding:12px 0;border-top:1px solid var(--rule);font-size:14px}
+  .tool p{margin:0;color:#4a463f}
+  /* 미리보기 창 */
+  dialog{border:0;padding:0;background:var(--paper);max-width:min(980px,96vw);width:100%;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+  dialog::backdrop{background:rgba(20,19,18,.6)}
+  .dl{display:grid;grid-template-columns:1fr 280px;gap:0}
+  .stage{background:#d9d4cb;display:grid;place-items:center;padding:18px;min-height:360px}
+  .frame{position:relative;background:#fff;border:8px solid #141312;overflow:hidden}
+  .frame iframe{position:absolute;left:0;top:0;border:0;transform-origin:0 0}
+  .meta{padding:20px;font-size:14px;overflow:auto;max-height:80vh}
+  .meta h3{margin:0 0 4px;font-family:var(--serif);font-size:20px}
+  .meta dt{font-weight:700;margin-top:12px;font-size:13px}
+  .meta dd{margin:2px 0 0;white-space:pre-wrap;color:#3a372f}
+  .x{position:absolute;right:10px;top:10px;background:var(--paper);border:1px solid var(--ink);width:34px;height:34px;display:grid;place-items:center;padding:0}
+  .msg{font-size:13px;min-height:1.2em}
+  .msg.err{color:var(--accent)}
+  footer{text-align:center;font-size:11px;color:var(--muted);padding:20px 0 30px}
+  [hidden]{display:none !important}
+  @media (max-width:720px){
+    .card{grid-template-columns:96px 1fr}
+    .side{grid-column:1/-1;justify-items:stretch;text-align:left;grid-template-columns:auto 1fr;align-items:center}
+    .side .ord{justify-content:flex-end}
+    .side .row{grid-column:1/-1;justify-content:flex-end}
+    .dl{grid-template-columns:1fr}
+    .vote{margin-left:0}
+  }
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <div><div class="k">VIBE CODING EXHIBITION 2026</div><h1>교사 관리</h1></div>
+  <span class="sp"></span>
+  <span id="who" class="by" style="font-size:13px;color:var(--muted)"></span>
+  <a class="btn" href="./">전시장 가기</a>
+</div></header>
+
+<main class="wrap">
+  <section id="v-login" class="panel empty" hidden>
+    <h2>선생님 학교 계정으로 로그인해 주세요</h2>
+    <p>관리 권한이 등록된 계정만 작품을 승인하고 투표를 열 수 있어요.</p>
+    <button class="btn main" id="login">학교 계정으로 로그인</button>
+    <p class="msg err" id="login-msg"></p>
+  </section>
+
+  <!-- 관리 권한이 아직 없는 계정 -->
+  <section id="v-noadmin" class="panel" hidden>
+    <h2>이 계정에는 아직 관리 권한이 없어요</h2>
+    <p>처음 한 번만 Firebase 콘솔에서 아래처럼 등록하면 돼요.</p>
+    <ol>
+      <li>Firebase 콘솔 → <b>Firestore Database</b> → <b>컬렉션 시작</b>(또는 <code>admins</code> 컬렉션 열기)</li>
+      <li>컬렉션 ID: <code>admins</code></li>
+      <li>문서 ID: <code id="my-uid"></code> <button class="btn sm" id="copy">복사</button></li>
+      <li>필드: <code>name</code> (문자열) = 아무 이름 → 저장</li>
+    </ol>
+    <p>저장한 뒤 이 페이지를 새로 고침하세요.</p>
+  </section>
+
+  <!-- 첫 화면: 작품 목록 -->
+  <section id="v-list" hidden>
+    <div class="head">
+      <h2>작품</h2>
+      <div class="tabs" role="group" aria-label="작품 거르기">
+        <button data-f="wait" aria-pressed="true">확인 대기 <span></span></button>
+        <button data-f="ok" aria-pressed="false">전시 중 <span></span></button>
+        <button data-f="all" aria-pressed="false">전체 <span></span></button>
+      </div>
+      <div class="vote"><span id="vote-state"></span><button class="btn sm" id="vote-toggle"></button></div>
+    </div>
+    <p class="msg" id="list-msg" role="status"></p>
+    <div class="list" id="list"></div>
+
+    <section class="awards" aria-labelledby="aw-t">
+      <h2 id="aw-t">부문상 결과</h2>
+      <p class="note">전시 중인 작품만 셉니다. 한 사람은 상 하나만 — 대상 → 프롬프트상 → 체험왕상 → 동료상 순서로 정하고, 이미 받은 작품은 다음 순위로 넘어가요. 프롬프트상은 작품 카드의 '프롬프트상' 단추로 직접 고르세요.</p>
+      <div class="aw-grid" id="awards"></div>
+    </section>
+
+    <div class="tools">
+      <h2>행사 준비·정리</h2>
+      <div class="tool">
+        <p>전시 순서 번호가 작을수록 입구에서 가까운 칸에 걸려요. 비워 두면 등록한 순서대로 걸려요. 전시장은 최대 20점까지 걸어요.</p>
+      </div>
+      <div class="tool">
+        <p>투표 기록 <b id="voters">0</b>명분. 행사 전에 시험으로 붙인 스티커·체험 기록·동료 투표가 있으면 모두 지우세요.</p>
+        <button class="btn danger sm" id="clear-votes">투표 기록 모두 지우기</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<dialog id="dlg" aria-labelledby="d-title">
+  <div class="dl">
+    <div class="stage"><div class="frame" id="d-frame"></div></div>
+    <div class="meta">
+      <h3 id="d-title"></h3>
+      <div class="by" id="d-by"></div>
+      <dl>
+        <dt>작품 설명</dt><dd id="d-desc"></dd>
+        <dt>만든 사람의 한마디</dt><dd id="d-say"></dd>
+        <dt>프롬프트</dt><dd id="d-prompt"></dd>
+        <dt>올린 방식</dt><dd id="d-kind"></dd>
+      </dl>
+    </div>
+  </div>
+  <button class="x" id="d-close" aria-label="닫기"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="2"/></svg></button>
+</dialog>
+
+<footer>바이브코딩 작품전 · 교사 관리 <span id="ver"></span> · © 2026 KIMYERANG.</footer>
+
+<script type="module">
+// 전시장(index.html)·등록(register.html)과 같은 Firebase 프로젝트·학교 도메인
+const FIREBASE = { apiKey: 'AIzaSyBL5S89ZPrwPcxE0SNYOU-7wbkhesNBKkQ', authDomain: 'hangeul-escape.firebaseapp.com', projectId: 'hangeul-escape' };
+const SCHOOL_DOMAINS = ['solnae.hs.kr'];
+const VERSION = 'v0.2';
+const SIZES = { wide: { name: '가로형', px: [1280, 800] }, phone: { name: '세로형', px: [390, 844] }, square: { name: '정사각형', px: [800, 800] } };
+
+const base = 'https://www.gstatic.com/firebasejs/10.12.2/';
+const [appM, authM, fs] = await Promise.all(['firebase-app', 'firebase-auth', 'firebase-firestore'].map(m => import(base + m + '.js')));
+const app = appM.initializeApp(FIREBASE), auth = authM.getAuth(app), db = fs.getFirestore(app);
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+$('ver').textContent = VERSION;
+
+// 전시장과 같은 표지 (register.html과 같은 코드)
+const hashSeed = s => { let h = 7; for (const ch of s) h = (Math.imul(h, 31) + ch.charCodeAt(0)) | 0; return Math.abs(h) % 100000; };
+function seeded(seed) { return () => { seed = (seed + 0x6D2B79F5) | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function coverSVG(seed, c) {
+  const r = seeded(seed * 7919), ink = '#1b1a18';
+  const cx = 600 + r() * 220, cy = 150 + r() * 160, R = 110 + r() * 90, ax = 560 + r() * 120, ar = 130 + r() * 70;
+  const lines = Array.from({ length: 7 }, (_, i) => `<line x1="${540 + r() * 40}" y1="${70 + i * 13}" x2="${880 + r() * 30}" y2="${70 + i * 13}" stroke="${ink}" stroke-width="1.6" opacity=".55"/>`).join('');
+  const kind = seed % 3;
+  const extra = kind === 0 ? `<rect x="${660 + r() * 140}" y="${330 + r() * 60}" width="${70 + r() * 60}" height="${150 + r() * 60}" fill="none" stroke="${ink}" stroke-width="3"/>`
+    : kind === 1 ? `<circle cx="${cx - R * .9}" cy="${cy + R * .8}" r="${R * .35}" fill="none" stroke="${ink}" stroke-width="3"/>`
+    : `<path d="M${520 + r() * 60} 520 L900 ${300 + r() * 80}" stroke="${ink}" stroke-width="3"/>`;
+  return `<svg viewBox="0 0 960 600" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="960" height="600" fill="#f4f1ea"/>${lines}<circle cx="${cx}" cy="${cy}" r="${R}" fill="${c}"/><path d="M${ax - ar} 600 A ${ar} ${ar} 0 0 1 ${ax + ar} 600 Z" fill="${ink}"/>${extra}</svg>`;
+}
+
+const show = v => ['v-login', 'v-noadmin', 'v-list'].forEach(id => $(id).hidden = id !== v);
+const say = (t, err) => { $('list-msg').textContent = t; $('list-msg').className = 'msg' + (err ? ' err' : ''); };
+
+// ── 로그인 ──
+const schoolEmail = e => SCHOOL_DOMAINS.some(d => (e || '').toLowerCase().endsWith('@' + d));
+$('login').onclick = async () => {
+  const p = new authM.GoogleAuthProvider(); p.setCustomParameters({ hd: SCHOOL_DOMAINS[0], prompt: 'select_account' });
+  try { await authM.signInWithPopup(auth, p); }
+  catch (e) { if (!/popup-closed|cancelled-popup/.test(e.code)) $('login-msg').textContent = '로그인하지 못했어요 (' + e.code + ')'; }
+};
+authM.onAuthStateChanged(auth, async u => {
+  if (u && !schoolEmail(u.email)) { await authM.signOut(auth); $('login-msg').textContent = `학교 계정(@${SCHOOL_DOMAINS[0]})으로 로그인해 주세요.`; return show('v-login'); }
+  if (!u) { $('who').textContent = ''; return show('v-login'); }
+  $('who').innerHTML = `${esc(u.email)} · <button class="btn sm" id="logout">로그아웃</button>`;
+  $('logout').onclick = () => authM.signOut(auth);
+  const adm = await fs.getDoc(fs.doc(db, 'admins', u.uid)).catch(() => null);
+  if (!adm?.exists()) { $('my-uid').textContent = u.uid; return show('v-noadmin'); }
+  show('v-list'); await load();
+});
+$('copy').onclick = () => navigator.clipboard.writeText($('my-uid').textContent).then(() => $('copy').textContent = '복사됨');
+
+// ── 데이터 ──
+let works = [], counts = {}, plays = {}, peers = {}, promptPick = '', voters = 0, peerN = 0, open = false, filter = 'wait';
+async function load() {
+  say('불러오는 중…');
+  try {
+    const [ws, vs, st, pv, aw] = await Promise.all([
+      fs.getDocs(fs.collection(db, 'works')), fs.getDocs(fs.collection(db, 'votes')), fs.getDoc(fs.doc(db, 'config', 'state')),
+      fs.getDocs(fs.collection(db, 'peerVotes')), fs.getDoc(fs.doc(db, 'config', 'awards')),
+    ]);
+    works = ws.docs.map(d => ({ id: d.id, ...d.data() }))
+      .sort((a, b) => (a.order ?? 999) - (b.order ?? 999) || (a.createdAt ?? 0) - (b.createdAt ?? 0));
+    counts = {}; plays = {}; peers = {}; voters = vs.size; peerN = pv.size;
+    vs.forEach(d => { (d.data().picks || []).forEach(k => counts[k] = (counts[k] || 0) + 1); (d.data().stamps || []).forEach(k => plays[k] = (plays[k] || 0) + 1); });
+    pv.forEach(d => { const k = d.data().pick; peers[k] = (peers[k] || 0) + 1; });
+    promptPick = aw.exists() ? aw.data().prompt || '' : '';
+    open = st.exists() && st.data().open === true;
+    say(''); render();
+  } catch (e) { console.error(e); say('불러오지 못했어요. 보안 규칙을 게시했는지 확인해 주세요. (' + (e.code || e.message) + ')', true); }
+}
+
+// ── 작품 카드: 이 함수 하나에서만 그린다 ──
+function workCard(w) {
+  const sz = SIZES[w.size] || SIZES.wide;
+  return `<article class="card" data-id="${esc(w.id)}">
+    <div class="cover">${coverSVG(hashSeed(w.id), w.color || '#3d3a35')}</div>
+    <div>
+      <span class="badge ${w.approved ? 'ok' : 'wait'}">${w.approved ? '전시 중' : '확인 대기'}</span>
+      <h3>${esc(w.title)}</h3>
+      <div class="by">${esc(w.author)} · ${sz.name} · ${w.kind === 'link' ? '링크' : 'HTML 파일'}${w.updatedAt ? ' · ' + new Date(w.updatedAt).toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : ''}</div>
+      <p class="desc">${esc(w.desc)}</p>
+    </div>
+    <div class="side">
+      <div class="stk">스티커 <b>${counts[w.id] || 0}</b> · 체험 <b>${plays[w.id] || 0}</b> · 동료 <b>${peers[w.id] || 0}</b></div>
+      <label class="ord">전시 순서 <input type="number" min="1" max="99" inputmode="numeric" data-act="order" value="${w.order ?? ''}" placeholder="—"></label>
+      <div class="row">
+        <button class="btn sm" data-act="view">미리보기</button>
+        ${w.approved ? `<button class="btn sm" data-act="prompt" aria-pressed="${promptPick === w.id}">프롬프트상</button>` : ''}
+        ${w.approved ? '<button class="btn sm" data-act="hide">전시 내리기</button>' : '<button class="btn main sm" data-act="ok">승인</button>'}
+        <button class="btn danger sm" data-act="del">삭제</button>
+      </div>
+    </div>
+  </article>`;
+}
+function render() {
+  const n = { wait: works.filter(w => !w.approved).length, ok: works.filter(w => w.approved).length, all: works.length };
+  document.querySelectorAll('.tabs button').forEach(b => { b.setAttribute('aria-pressed', b.dataset.f === filter); b.querySelector('span').textContent = n[b.dataset.f]; });
+  const shown = works.filter(w => filter === 'all' || (filter === 'ok') === !!w.approved);
+  $('list').innerHTML = shown.length ? shown.map(workCard).join('')
+    : `<div class="panel empty"><p>${filter === 'wait' ? '확인을 기다리는 작품이 없어요.' : filter === 'ok' ? '아직 전시 중인 작품이 없어요. 전시장에는 예시 작품이 걸려 있어요.' : '아직 등록된 작품이 없어요. 학생들에게 작품 등록 페이지(register.html)를 알려 주세요.'}</p></div>`;
+  $('vote-state').innerHTML = `<span class="dot" style="background:${open ? 'var(--ok)' : 'var(--muted)'}"></span>투표 ${open ? '진행 중' : '닫힘'}`;
+  $('vote-toggle').textContent = open ? '투표 마감하기' : '투표 열기';
+  $('voters').textContent = voters + (peerN ? ` + 동료 투표 ${peerN}` : '');
+  renderAwards();
+}
+// ── 부문상: 한 사람 한 상 ──
+function renderAwards() {
+  const shown = works.filter(w => w.approved), won = new Set(), name = w => `${esc(w.title)} <small>(${esc(w.author)})</small>`;
+  const auto = (title, how, val, tie, unit) => {
+    const ranked = shown.filter(w => val(w) > 0).sort((a, b) => val(b) - val(a) || tie(b) - tie(a));
+    let winner = ranked.find(w => !won.has(w.id)); if (winner) won.add(winner.id);
+    const top = ranked.slice(0, Math.max(3, ranked.indexOf(winner) + 1));
+    return `<div class="aw"><h3>${title}</h3><div class="how">${how}</div>${top.length ? `<ol>${top.map(w =>
+      `<li class="${w === winner ? 'win' : won.has(w.id) && w !== winner ? 'skip' : ''}">${name(w)} · ${val(w)}${unit}</li>`).join('')}</ol>` : '<div class="none">아직 기록이 없어요</div>'}</div>`;
+  };
+  const st = w => counts[w.id] || 0, pl = w => plays[w.id] || 0, pe = w => peers[w.id] || 0;
+  let html = auto('대상', '관람객 스티커 수 (같으면 체험 수)', st, pl, '장');
+  const pw = shown.find(w => w.id === promptPick), dup = pw && won.has(pw.id);
+  if (pw && !dup) won.add(pw.id);
+  html += `<div class="aw"><h3>프롬프트상</h3><div class="how">강사·선생님 심사</div>${pw ? `<ol><li class="${dup ? 'skip' : 'win'}">${name(pw)}</li></ol>${dup ? '<div class="none" style="color:var(--accent)">이미 대상 작품이에요. 다른 작품을 골라 주세요.</div>' : ''}` : '<div class="none">작품 카드의 \'프롬프트상\' 단추로 골라 주세요</div>'}</div>`;
+  html += auto('체험왕상', '로그인한 관람객의 체험 수 (같으면 스티커 수)', pl, st, '명');
+  html += auto('동료상', '작품을 만든 학생들의 투표 (같으면 스티커 수)', pe, st, '표');
+  $('awards').innerHTML = html;
+}
+document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => { filter = b.dataset.f; render(); });
+
+// ── 카드 단추 ──
+const byId = id => works.find(w => w.id === id);
+$('list').addEventListener('click', async e => {
+  const btn = e.target.closest('button[data-act]'); if (!btn) return;
+  const w = byId(btn.closest('.card').dataset.id), act = btn.dataset.act;
+  if (act === 'view') return preview(w);
+  if (act === 'prompt') {
+    const next = promptPick === w.id ? '' : w.id;
+    try { await fs.setDoc(fs.doc(db, 'config', 'awards'), { prompt: next }); promptPick = next; say(next ? `「${w.title}」을 프롬프트상으로 골랐어요.` : '프롬프트상 선택을 취소했어요.'); render(); }
+    catch (err) { say('바꾸지 못했어요 (' + (err.code || err.message) + ')', true); }
+    return;
+  }
+  try {
+    btn.disabled = true;
+    if (act === 'ok' || act === 'hide') {
+      await fs.updateDoc(fs.doc(db, 'works', w.id), { approved: act === 'ok' });
+      w.approved = act === 'ok'; say(`「${w.title}」 ${w.approved ? '전시장에 걸었어요.' : '전시에서 내렸어요.'}`);
+    } else if (act === 'del') {
+      if (!confirm(`「${w.title}」(${w.author})을 삭제할까요?\n학생이 올린 파일도 함께 지워지고 되돌릴 수 없어요.`)) return;
+      await fs.deleteDoc(fs.doc(db, 'workFiles', w.id)).catch(() => {});
+      await fs.deleteDoc(fs.doc(db, 'works', w.id));
+      works = works.filter(x => x !== w); say(`「${w.title}」을 삭제했어요.`);
+    }
+    render();
+  } catch (err) { console.error(err); say('바꾸지 못했어요 (' + (err.code || err.message) + ')', true); }
+  finally { btn.disabled = false; }
+});
+$('list').addEventListener('change', async e => {
+  if (e.target.dataset.act !== 'order') return;
+  const w = byId(e.target.closest('.card').dataset.id), v = e.target.value.trim();
+  try {
+    if (v === '') { await fs.updateDoc(fs.doc(db, 'works', w.id), { order: fs.deleteField() }); delete w.order; }
+    else { const n = Math.max(1, Math.min(99, parseInt(v, 10) || 1)); await fs.updateDoc(fs.doc(db, 'works', w.id), { order: n }); w.order = n; }
+    works.sort((a, b) => (a.order ?? 999) - (b.order ?? 999) || (a.createdAt ?? 0) - (b.createdAt ?? 0));
+    say(`「${w.title}」 전시 순서를 ${w.order ?? '등록 순'}(으)로 정했어요.`); render();
+  } catch (err) { console.error(err); say('순서를 바꾸지 못했어요 (' + (err.code || err.message) + ')', true); }
+});
+
+// ── 투표 열기·마감 ──
+$('vote-toggle').onclick = async () => {
+  if (!confirm(open ? '투표를 마감할까요? 이후로는 스티커를 붙일 수 없어요.' : '투표를 열까요? 지금부터 관람객이 스티커를 붙일 수 있어요.')) return;
+  try { await fs.setDoc(fs.doc(db, 'config', 'state'), { open: !open }); open = !open; render(); say(open ? '투표를 열었어요.' : '투표를 마감했어요.'); }
+  catch (err) { say('바꾸지 못했어요 (' + (err.code || err.message) + ')', true); }
+};
+
+// ── 투표 기록 지우기 ──
+$('clear-votes').onclick = async () => {
+  if (!voters && !peerN && !promptPick) return say('지울 투표 기록이 없어요.');
+  if (!confirm(`투표 기록을 모두 지울까요?\n관람객 스티커·체험 기록 ${voters}명분, 동료 투표 ${peerN}표, 프롬프트상 선택이 전부 사라지고 되돌릴 수 없어요.`)) return;
+  try {
+    const [vs, pv] = await Promise.all([fs.getDocs(fs.collection(db, 'votes')), fs.getDocs(fs.collection(db, 'peerVotes'))]);
+    await Promise.all([...vs.docs, ...pv.docs].map(d => fs.deleteDoc(d.ref)));
+    if (promptPick) await fs.setDoc(fs.doc(db, 'config', 'awards'), { prompt: '' });
+    say(`투표 기록을 지웠어요 (관람객 ${vs.size}명분, 동료 투표 ${pv.size}표).`); await load();
+  } catch (err) { say('지우지 못했어요 (' + (err.code || err.message) + ')', true); }
+};
+
+// ── 미리보기 (전시장 액자와 같은 비율) ──
+async function preview(w) {
+  const [pw, ph] = (SIZES[w.size] || SIZES.wide).px;
+  $('d-title').textContent = w.title; $('d-by').textContent = `${w.author} · ${(SIZES[w.size] || SIZES.wide).name}`;
+  $('d-desc').textContent = w.desc; $('d-say').textContent = w.say; $('d-prompt').textContent = w.prompt || '(없음)';
+  $('d-kind').textContent = w.kind === 'link' ? w.url : 'HTML 파일';
+  const frame = $('d-frame'); frame.replaceChildren();
+  $('dlg').showModal();
+  const stage = frame.parentElement, k = Math.min((stage.clientWidth - 36) / pw, Math.min(560, innerHeight * .7) / ph);
+  frame.style.width = Math.round(pw * k) + 'px'; frame.style.height = Math.round(ph * k) + 'px';
+  const f = document.createElement('iframe'); f.title = w.title + ' 미리보기';
+  f.style.width = pw + 'px'; f.style.height = ph + 'px'; f.style.transform = `scale(${k})`;
+  const sb = 'allow-scripts allow-forms allow-modals allow-popups allow-pointer-lock';
+  if (w.kind === 'link') { f.setAttribute('sandbox', sb + ' allow-same-origin'); f.src = w.url; }
+  else {
+    f.setAttribute('sandbox', sb);
+    const d = await fs.getDoc(fs.doc(db, 'workFiles', w.id)).catch(() => null);
+    f.srcdoc = d?.exists() ? d.data().html : '<p style="font:16px sans-serif;padding:20px">파일을 찾지 못했어요.</p>';
+  }
+  frame.appendChild(f);
+}
+$('d-close').onclick = () => $('dlg').close();
+$('dlg').addEventListener('close', () => $('d-frame').replaceChildren());
+</script>
+</body>
+</html>
