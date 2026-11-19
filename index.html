@@ -73,6 +73,12 @@
   #zone .k{font-size:11px;letter-spacing:4px;color:var(--muted)}
   #zone .n{font-family:var(--serif);font-weight:700;font-size:18px}
   #zone.show{opacity:1;transform:translate(-50%,0)}
+  #coin-btn{left:50%;top:42%;transform:translateX(-50%);z-index:6;font-size:15px;padding:11px 18px;gap:8px;box-shadow:0 6px 20px rgba(0,0,0,.18);animation:coinIn .35s ease}
+  #coin-btn[hidden]{display:none}
+  #coin-btn .kbd{display:inline-grid;place-items:center;min-width:22px;height:22px;border:1px solid var(--ink);border-radius:4px;font-size:12px;font-weight:700;box-shadow:0 2px 0 var(--ink);background:#fff}
+  body.touch #coin-btn .kbd{display:none}
+  @keyframes coinIn{from{opacity:0;transform:translate(-50%,8px)}}
+  @media (prefers-reduced-motion:reduce){#coin-btn{animation:none}}
   #howto{left:50%;bottom:120px;transform:translate(-50%,10px);opacity:0;transition:opacity .4s,transform .4s;display:flex;align-items:center;gap:16px;padding:14px 18px;max-width:calc(100vw - 32px)}
   #howto.show{opacity:1;transform:translate(-50%,0)}
   #howto[hidden]{display:none}
@@ -249,7 +255,7 @@
   <button id="go" class="btn main" type="submit">입장하기</button>
   <button type="button" class="brl" id="entry-brochure">전시 안내서와 지도 먼저 보기</button>
   <a class="reg" href="register.html">작품을 만든 학생인가요? 작품 등록하기 →</a>
-  <div class="note">관람은 로그인 없이 할 수 있습니다. 작품 <b>3점</b>을 체험하면 투표권이 열리고, <b>학교 구글 계정</b>으로 로그인하면 마음에 드는 작품에 스티커 <b>3장</b>을 붙일 수 있습니다.<span id="entry-demo"> 지금 걸린 작품은 모두 예시입니다.</span> 전시장 곳곳에 <b>반짝이는 금화 5개</b>가 숨어 있어요. 가까이 걸어가면 저절로 주워집니다.</div>
+  <div class="note">관람은 로그인 없이 할 수 있습니다. 작품 <b>3점</b>을 체험하면 투표권이 열리고, <b>학교 구글 계정</b>으로 로그인하면 마음에 드는 작품에 스티커 <b>3장</b>을 붙일 수 있습니다.<span id="entry-demo"> 지금 걸린 작품은 모두 예시입니다.</span> 전시장 곳곳에 <b>반짝이는 금화 5개</b>가 숨어 있어요. 가까이 가서 <b>E</b>(폰은 '금화 줍기' 단추)를 누르면 주워요.</div>
 </form>
 
 <div id="who" class="hud panel">
@@ -273,6 +279,7 @@
 <div id="guide" role="status"></div>
 <div id="zone" class="hud panel" aria-live="polite"><div class="k" id="zone-k"></div><div class="n" id="zone-n"></div></div>
 <div id="toast" class="hud" aria-live="polite"></div>
+<button id="coin-btn" class="hud panel btn" hidden><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="#e0b44a" stroke="currentColor" stroke-width="1.4"/><circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="1.1"/></svg><span class="kbd">E</span> 금화 줍기</button>
 <div id="howto" class="hud panel" role="status" hidden>
   <div class="keys" aria-hidden="true"><span class="kc"></span><span class="kc">↑</span><span class="kc"></span><span class="kc">←</span><span class="kc">↓</span><span class="kc">→</span></div>
   <div class="tx"><b class="pc">키보드 방향키로 걸어요</b><b class="touch">왼쪽 아래 동그라미를 밀어서 걸어요</b>
@@ -306,7 +313,7 @@
   <b>크게 보기</b> 작품 오른쪽 위 버튼 — 다시 누르면 벽 화면 크기로 돌아갑니다<br>
   <b>물러나기</b> 뒤로 걷기(S·↓) 또는 '뒤로 물러나기'<br>
   <b>다시 걷기</b> 작품을 쓴 뒤 작품 바깥을 한 번 누르기<br>
-  <b>금화 찾기</b> 금화 5개가 바닥이나 벽 밑에 숨어 있어요. 가끔 반짝여요. 가까이 걸어가면 주워지고, 위쪽 동그라미 숫자가 올라가요. 다 찾으면 화면을 선생님께<br>
+  <b>금화 찾기</b> 금화 5개가 바닥이나 벽 밑에 숨어 있어요. 가끔 반짝여요. 가까이 가서 E(폰은 '금화 줍기' 단추)를 누르면 주워지고, 위쪽 동그라미 숫자가 올라가요. 다 찾으면 화면을 선생님께<br>
   <b>쉬기</b> 의자 가까이 가면 '앉아서 쉬기' 단추가 나와요<br>
   <b>휴대폰</b> 왼쪽 아래 원을 밀어서 걷기<br>
   <b>말 걸기</b> 오른쪽 아래 버튼 — 정해진 인사말이 다른 관람객 화면에서 내 머리 위에 떠요
@@ -326,7 +333,7 @@
       <li>중앙 홀 전광판에서 실시간 순위를 볼 수 있어요.</li>
     </ol></section>
     <section><h3>숨은 즐거움</h3><ul>
-      <li><b>금화 찾기</b> 금화 5개가 곳곳의 바닥이나 벽 밑에 숨어 있어요. 가끔 반짝이니 잘 살펴보세요. 가까이 가면 주워져요. 다 찾으면 화면을 선생님께 보여 주세요. 지도에 없는 방도 있다는 소문이…</li>
+      <li><b>금화 찾기</b> 금화 5개가 곳곳의 바닥이나 벽 밑에 숨어 있어요. 가끔 반짝이니 잘 살펴보세요. 가까이 가서 E(폰은 '금화 줍기' 단추)를 누르면 주워져요. 다 찾으면 화면을 선생님께 보여 주세요. 지도에 없는 방도 있다는 소문이…</li>
       <li><b>쉬어 가기</b> 의자 가까이에서 '앉아서 쉬기'를 누르면 앉아서 둘러볼 수 있어요.</li>
       <li><b>함께 관람</b> 다른 관람객이 캐릭터로 보이고, '말 걸기'로 인사할 수 있어요.</li>
     </ul></section>
@@ -375,7 +382,7 @@ const CONFIG = {
   STAMPS_NEEDED: 3,     // 투표권이 열리는 스탬프 수
   STAMP_SECONDS: 8,     // 한 작품을 이만큼(초) 써 봐야 스탬프
 };
-const VERSION = 'v2.8';
+const VERSION = 'v2.9';
 
 // ───────────── 전시장 평면도 (한 칸 = 3m) ─────────────
 // # 벽  . 바닥  S 입구  B 작품(벽에 걸림)  T 금화  R 순위판  W 전시 제목 벽
@@ -1298,7 +1305,7 @@ const keys = new Set();
 addEventListener('keydown', e => {
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') return;
   keys.add(e.code); if (e.code.startsWith('Arrow')) e.preventDefault();
-  if (e.code === 'KeyE' && state === 'play') stepToggle();
+  if (e.code === 'KeyE' && state === 'play' && !pickCoin()) stepToggle(); // 금화가 가까우면 줍기가 먼저
 });
 addEventListener('keyup', e => keys.delete(e.code));
 addEventListener('blur', () => keys.clear());
@@ -1341,6 +1348,15 @@ function showHowto() {
   const start = player.pos.clone(), startYaw = player.yaw, t0 = performance.now();
   const watch = setInterval(() => { if (player.pos.distanceTo(start) > 1.5 || Math.abs(player.yaw - startYaw) > 1 || performance.now() - t0 > 10000) hide(); }, 300);
   $('howto-x').onclick = hide;
+}
+// 금화 줍기 (E 키 또는 화면의 '금화 줍기' 단추)
+let nearCoin = null;
+function pickCoin() {
+  const tr = nearCoin; if (!tr) return false;
+  scene.remove(tr.gem); treasures.splice(treasures.indexOf(tr), 1); found.add(tr.id); store.set('expo.treasures', [...found]);
+  nearCoin = null; $('coin-btn').hidden = true; $('treasure-n').textContent = found.size;
+  toast(found.size === TREASURE_TOTAL ? '숨겨진 금화 다섯 개를 모두 찾았습니다. 이 화면을 담당 선생님께 보여 주세요' : `금화를 주웠습니다 (${found.size}/${TREASURE_TOTAL})`);
+  return true;
 }
 function toast(msg) { const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2800); }
 // 바닥 길 안내: 다른 구역 입구까지 걸어서 6칸(약 15m) 안에 오면, 바닥에 그 구역 이름과 화살표가 길을 따라 나타난다.
@@ -1438,6 +1454,7 @@ function openBrochure() { $('br-map').innerHTML = brochureMap(); $('brochure').s
 $('guide-btn').onclick = openBrochure; $('entry-brochure').onclick = openBrochure;
 $('br-close').onclick = () => $('brochure').close();
 $('brochure').addEventListener('click', e => { if (e.target === $('brochure')) $('brochure').close(); }); // 바깥 누르면 닫힘
+$('coin-btn').onclick = pickCoin;
 $('help-btn').onclick = () => { const h = $('help'), open = h.style.display !== 'block'; h.style.display = open ? 'block' : 'none'; $('help-btn').setAttribute('aria-expanded', open); };
 
 const HIDDEN_TREASURE = (() => { for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) if (at(c, r) === 'T' && zoneOf(c, r).k === 'HIDDEN ROOM') return `${c},${r}`; })();
@@ -1665,6 +1682,7 @@ $('go').onclick = () => {
   $('who-me').innerHTML = portrait(player.char) + '<span></span>'; $('who-me').querySelector('span').textContent = nick;
   $('who').style.display = 'flex'; $('help-btn').style.display = 'block'; $('minimap').style.display = 'block';
   $('talk-btn').style.display = $('run-btn').style.display = $('guide-btn').style.display = $('sit-btn').style.display = 'inline-flex';
+  document.body.classList.toggle('touch', matchMedia('(pointer: coarse)').matches);
   showHowto();
   setTimeout(() => toast("오른쪽 아래 '안내서'에서 전시장 지도와 관람 방법을 볼 수 있어요"), 2600);
   initPresence().catch(e => { console.error(e); toast('다른 관람객 연결에 실패했어요. 혼자 관람은 계속할 수 있어요'); });
@@ -1732,15 +1750,9 @@ function update(dt) {
   booths.forEach(b => b.marker.material.opacity = b === active ? .45 + Math.sin(t * 3.5) * .2 : .22);
 
   if (state === 'play') {
-    // 금화 줍기
-    for (let i = treasures.length - 1; i >= 0; i--) {
-      const tr = treasures[i];
-      if (Math.hypot(tr.gem.position.x - player.pos.x, tr.gem.position.z - player.pos.z) < 1.2) {
-        scene.remove(tr.gem); treasures.splice(i, 1); found.add(tr.id); store.set('expo.treasures', [...found]);
-        $('treasure-n').textContent = found.size;
-        toast(found.size === TREASURE_TOTAL ? '숨겨진 금화 다섯 개를 모두 찾았습니다. 이 화면을 담당 선생님께 보여 주세요' : `숨겨진 금화를 찾았습니다 (${found.size}/${TREASURE_TOTAL})`);
-      }
-    }
+    // 금화: 가까이 가면 줍기 단추
+    const nc = focus ? null : treasures.find(tr => Math.hypot(tr.gem.position.x - player.pos.x, tr.gem.position.z - player.pos.z) < 2) || null;
+    if (nc !== nearCoin) { nearCoin = nc; $('coin-btn').hidden = !nc; }
     // 의자 가까이인지
     // 벤치는 길쭉하다(1.8×0.5m) → 가운데가 아니라 벤치 가장자리에서 1m 안이면 '가까이'
     const nb = benches.find(b => Math.hypot(Math.max(Math.abs(player.pos.x - b.x) - .9, 0), Math.max(Math.abs(player.pos.z - b.z) - .25, 0)) < 1) || null;
