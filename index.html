@@ -302,7 +302,7 @@
 </div>
 <div id="talk-menu" class="hud panel" hidden></div>
 <div id="demo-badge" class="hud" hidden>체험 모드 — 투표가 이 기기에만 저장됩니다</div>
-<canvas id="minimap" class="hud panel" width="186" height="126" role="img" aria-label="전시장 평면도 (금색 별은 미니게임 자리)"></canvas>
+<canvas id="minimap" class="hud panel" width="186" height="126" role="img" aria-label="전시장 평면도 (파란 점은 미니게임 자리)"></canvas>
 <div id="guide" role="status"></div>
 <div id="zone" class="hud panel" aria-live="polite"><div class="k" id="zone-k"></div><div class="n" id="zone-n"></div></div>
 <div id="toast" class="hud" aria-live="polite"></div>
@@ -373,7 +373,7 @@
     </ol></section>
     <section><h3>숨은 즐거움</h3><ul>
       <li><b>금화 찾기</b> 금화 5개가 곳곳의 바닥이나 벽 밑에 숨어 있어요. 가끔 반짝이니 잘 살펴보세요. 가까이 가서 E(폰은 '금화 줍기' 단추)를 누르면 주워져요. 다 찾으면 화면을 선생님께 보여 주세요. 지도에 없는 방도 있다는 소문이…</li>
-      <li><b>미니게임</b> 서관의 〈별이 빛나는 밤〉 앞에서는 <b>명화 퍼즐</b>, 복도의 〈보너스 스테이지〉 앞에서는 <b>금화 60초 모으기</b>를 할 수 있어요. 오른쪽 위 작은 지도의 <b>금색 별</b>이 게임 자리예요. 액자 앞에서 E(폰은 단추). 게임마다 1등에게 상품이 있어요 (학교 계정 로그인 필요).</li>
+      <li><b>미니게임</b> 서관의 〈별이 빛나는 밤〉 앞에서는 <b>명화 퍼즐</b>, 복도의 〈보너스 스테이지〉 앞에서는 <b>금화 60초 모으기</b>를 할 수 있어요. 오른쪽 위 작은 지도의 <b>파란 점</b>이 게임 자리예요. 액자 앞에서 E(폰은 단추). 게임마다 1등에게 상품이 있어요 (학교 계정 로그인 필요).</li>
       <li><b>쉬어 가기</b> 의자 가까이에서 '앉아서 쉬기'를 누르면 앉아서 둘러볼 수 있어요.</li>
       <li><b>함께 관람</b> 다른 관람객이 캐릭터로 보이고, '말 걸기'로 인사할 수 있어요.</li>
     </ul></section>
@@ -423,7 +423,7 @@ const CONFIG = {
   STAMPS_NEEDED: 3,     // 투표권이 열리는 스탬프 수
   STAMP_SECONDS: 8,     // 한 작품을 이만큼(초) 써 봐야 스탬프
 };
-const VERSION = 'v3.3';
+const VERSION = 'v3.4';
 
 // ───────────── 전시장 평면도 (한 칸 = 3m) ─────────────
 // # 벽  . 바닥  S 입구  B 작품(벽에 걸림)  T 금화  R 순위판  W 전시 제목 벽
@@ -1748,10 +1748,8 @@ function drawMinimap() {
   }
   mm.fillStyle = '#1b1a18';
   booths.forEach(b => mm.fillRect(MO + b.face.x / S * MM - 1, MO + b.face.z / S * MM - 1, 2.5, 2.5));
-  for (const g of Object.values(GAMES)) if (g.spot) { // 미니게임 자리: 금색 별
-    star(mm, MO + (g.spot.x + g.spot.dx * .7) / S * MM, MO + (g.spot.z + g.spot.dz * .7) / S * MM, 5, 5, 2.2);
-    mm.fillStyle = '#e0b44a'; mm.fill(); mm.lineWidth = 1; mm.strokeStyle = '#1b1a18'; mm.stroke();
-  }
+  mm.fillStyle = '#1f6fd6'; // 미니게임 자리: 작품 점과 같은 크기의 파란 점
+  for (const g of Object.values(GAMES)) if (g.spot) { mm.beginPath(); mm.arc(MO + g.spot.x / S * MM, MO + g.spot.z / S * MM, 1.6, 0, 7); mm.fill(); }
   mm.fillStyle = '#2f5d8a'; others.forEach(o => { mm.beginPath(); mm.arc(MO + o.avatar.position.x / S * MM, MO + o.avatar.position.z / S * MM, 2.2, 0, 7); mm.fill(); });
   const px = MO + player.pos.x / S * MM, pz = MO + player.pos.z / S * MM;
   mm.save(); mm.translate(px, pz); mm.rotate(-player.yaw); mm.fillStyle = '#a8462b';
