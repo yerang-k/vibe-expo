@@ -423,7 +423,7 @@ const CONFIG = {
   STAMPS_NEEDED: 3,     // 투표권이 열리는 스탬프 수
   STAMP_SECONDS: 8,     // 한 작품을 이만큼(초) 써 봐야 스탬프
 };
-const VERSION = 'v3.1';
+const VERSION = 'v3.2';
 
 // ───────────── 전시장 평면도 (한 칸 = 3m) ─────────────
 // # 벽  . 바닥  S 입구  B 작품(벽에 걸림)  T 금화  R 순위판  W 전시 제목 벽
@@ -1063,9 +1063,9 @@ for (const f of freeFaces) {
 }
 
 const GAMES = {
-  puzzle: { key: 'starry', field: 'puzzle', asc: true, title: '명화 퍼즐', k: 'MINI GAME · 빨리 맞출수록 1등',
+  puzzle: { key: 'starry', field: 'puzzle', asc: true, mapName: '퍼즐 게임', title: '명화 퍼즐', k: 'MINI GAME · 빨리 맞출수록 1등',
     how: '섞인 조각 두 개를 차례로 누르면 자리가 바뀌어요. 〈별이 빛나는 밤〉을 가장 빨리 원래대로 맞춘 사람이 1등!' },
-  coin: { key: 'pop_game', field: 'coin', asc: false, title: '금화 60초 모으기', k: 'MINI GAME · 많이 모을수록 1등',
+  coin: { key: 'pop_game', field: 'coin', asc: false, mapName: '금화 게임', title: '금화 60초 모으기', k: 'MINI GAME · 많이 모을수록 1등',
     how: '60초 동안 떨어지는 금화를 받아요. 큰 금화는 3개, 폭탄에 맞으면 3개를 잃어요. ← → 키나 화면을 끌어서 움직여요.' },
 };
 for (const g of Object.values(GAMES)) { // 게임 액자 위 안내판
@@ -1576,8 +1576,13 @@ function brochureMap() {
     const x = b.face.x / S * k, y = b.face.z / S * k;
     marks += `<circle cx="${x}" cy="${y}" r="4" fill="#1b1a18"/><text x="${x}" y="${y + 2}" font-size="5" text-anchor="middle" fill="#f7f5f1">${b.ex.no}</text>`;
   });
+  for (const g of Object.values(GAMES)) { // 미니게임 액자: 테라코타 이름표
+    if (!g.spot) continue;
+    const x = (g.spot.x + g.spot.dx * 1.6) / S * k, y = (g.spot.z + g.spot.dz * 1.6) / S * k, w = 34;
+    marks += `<rect x="${x - w / 2}" y="${y - 6}" width="${w}" height="12" rx="6" fill="#a8462b" stroke="#f7f5f1" stroke-width="1"/><text x="${x}" y="${y + 2.2}" font-size="6.2" font-weight="700" text-anchor="middle" fill="#fff">${g.mapName}</text>`;
+  }
   const me = state === 'play' ? `<circle cx="${player.pos.x / S * k}" cy="${player.pos.z / S * k}" r="4.5" fill="none" stroke="#a8462b" stroke-width="2"/><text x="${player.pos.x / S * k}" y="${player.pos.z / S * k - 7}" font-size="6" text-anchor="middle" fill="#a8462b">지금 여기</text>` : '';
-  return `<svg viewBox="0 0 ${COLS * k} ${ROWS * k}" role="img" aria-label="전시장 지도: ${ZONES.filter(z => z.k !== 'HIDDEN ROOM').map(z => z.name).join(', ')}">${cells}${marks}${labels}${me}</svg>`;
+  return `<svg viewBox="0 0 ${COLS * k} ${ROWS * k}" role="img" aria-label="전시장 지도: ${ZONES.filter(z => z.k !== 'HIDDEN ROOM').map(z => z.name).join(', ')}. 미니게임: 서관 맨 안쪽 벽 명화 퍼즐, 로비와 서관 사이 복도 금화 게임">${cells}${marks}${labels}${me}</svg>`;
 }
 function openBrochure() { $('br-map').innerHTML = brochureMap(); $('brochure').showModal(); $('br-close').focus(); }
 $('guide-btn').onclick = openBrochure; $('entry-brochure').onclick = openBrochure;
