@@ -1,0 +1,122 @@
+rules_version = '2';
+// 바이브코딩 앱 전시관 — Firestore 보안 규칙
+// Firebase 콘솔 → Firestore Database → 규칙 탭에 그대로 붙여넣고 "게시".
+// ※ 학교 도메인을 바꾸거나 더하면 index.html의 SCHOOL_DOMAINS도 같이 고친다. 예: '.*@(solnae[.]hs[.]kr|s[.]solnae[.]hs[.]kr)$'
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function schoolUser() {
+      return request.auth != null
+        && request.auth.token.email_verified == true
+        && request.auth.token.email.matches('.*@(solnae[.]hs[.]kr)$');
+    }
+    // 교사: admins/{uid} 문서가 있는 학교 계정 (콘솔에서 한 번만 만든다)
+    function isAdmin() {
+      return schoolUser() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+    function votingOpen() {
+      return get(/databases/$(database)/documents/config/state).data.open == true;
+    }
+    function validShape(d) {
+      return d.keys().hasOnly(['picks', 'stamps', 'at'])
+        && d.picks is list && d.picks.size() <= 3              // 1인 스티커 3장
+        && d.picks.toSet().size() == d.picks.size()            // 같은 작품에 두 번 금지
+        && d.stamps is list && d.stamps.size() <= 40
+        && (d.picks.size() == 0 || d.stamps.size() >= 3);      // 스탬프 3개 모아야 투표 (index.html STAMPS_NEEDED와 같게)
+    }
+
+    // votes/{uid}: 한 계정당 문서 하나. 이메일·이름은 저장하지 않는다.
+    match /votes/{uid} {
+      allow read: if true;                                    // 실시간 순위 집계용 (작품 번호만 담김)
+      allow create: if schoolUser() && request.auth.uid == uid
+        && validShape(request.resource.data)
+        && (request.resource.data.picks.size() == 0 || votingOpen());
+      allow update: if schoolUser() && request.auth.uid == uid
+        && validShape(request.resource.data)
+        && request.resource.data.picks.hasAll(resource.data.picks)   // 붙인 스티커는 뗄 수 없음
+        && (request.resource.data.picks == resource.data.picks || votingOpen());
+      allow delete: if isAdmin();                             // 행사 전 시험 투표 지우기
+    }
+
+    // works/{학생uid}: 학생 작품 정보 (한 사람당 1개). 학생은 approved=false로만 저장 → 교사가 콘솔에서 true로 바꿔야 전시됨.
+    function validWork(d) {
+      return d.keys().hasOnly(['title', 'author', 'desc', 'say', 'prompt', 'size', 'color', 'kind', 'url', 'approved', 'order', 'createdAt', 'updatedAt'])
+        && d.title is string && d.title.size() >= 1 && d.title.size() <= 30
+        && d.author is string && d.author.size() >= 1 && d.author.size() <= 12
+        && d.desc is string && d.desc.size() <= 100
+        && d.say is string && d.say.size() <= 80
+        && d.prompt is string && d.prompt.size() <= 300
+        && d.size in ['wide', 'phone', 'square']
+        && d.color is string && d.color.size() <= 9
+        && d.kind in ['file', 'link']
+        && d.url is string && d.url.size() <= 500 && (d.kind == 'file' || d.url.matches('https://.*'))
+        && d.approved == false;
+    }
+    match /works/{uid} {
+      allow read: if resource.data.approved == true || (request.auth != null && request.auth.uid == uid) || isAdmin();
+      allow update: if isAdmin() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['approved', 'order'])
+        && request.resource.data.approved is bool && request.resource.data.get('order', 0) is int;
+      allow delete: if isAdmin();
+      allow create: if schoolUser() && request.auth.uid == uid && validWork(request.resource.data) && !('order' in request.resource.data);
+      allow update: if schoolUser() && request.auth.uid == uid && validWork(request.resource.data)
+        && request.resource.data.get('order', null) == resource.data.get('order', null);   // 전시 순서는 교사만
+      allow delete: if request.auth != null && request.auth.uid == uid;
+    }
+    // workFiles/{학생uid}: HTML 파일 내용
+    match /workFiles/{uid} {
+      allow read: if get(/databases/$(database)/documents/works/$(uid)).data.approved == true || (request.auth != null && request.auth.uid == uid) || isAdmin();
+      allow write: if schoolUser() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['html']) && request.resource.data.html is string && request.resource.data.html.size() <= 1000000;
+      allow delete: if (request.auth != null && request.auth.uid == uid) || isAdmin();
+    }
+
+    // admins/{uid}: 교사 표시. 본인 것만 읽을 수 있고, 만들기는 콘솔에서만
+    match /admins/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow write: if false;
+    }
+
+    // peerVotes/{학생uid} { pick: 작품id, at } — 동료상: 작품을 올린 학생만, 승인된 남의 작품에 1표 (투표 기간에 바꿀 수 있음)
+    match /peerVotes/{uid} {
+      allow read: if isAdmin() || (request.auth != null && request.auth.uid == uid);
+      allow create, update: if schoolUser() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['pick', 'at'])
+        && request.resource.data.pick is string && request.resource.data.pick != uid
+        && exists(/databases/$(database)/documents/works/$(uid))
+        && get(/databases/$(database)/documents/works/$(request.resource.data.pick)).data.approved == true
+        && votingOpen();
+      allow delete: if isAdmin();
+    }
+
+    // gameScores/{uid} { nick, puzzle(초, 작을수록 좋음), coin(개), at } — 미니게임 최고 기록. 순위표용이라 누구나 읽음. 기록이 나빠지는 쪽으로는 못 바꿈
+    function validScore(d) {
+      return d.keys().hasOnly(['nick', 'puzzle', 'coin', 'at'])
+        && d.nick is string && d.nick.size() >= 1 && d.nick.size() <= 10
+        && (!('puzzle' in d) || (d.puzzle is number && d.puzzle >= 3 && d.puzzle <= 3600))
+        && (!('coin' in d) || (d.coin is int && d.coin >= 0 && d.coin <= 400))
+        && d.at is int;
+    }
+    match /gameScores/{uid} {
+      allow read: if true;
+      allow create: if schoolUser() && request.auth.uid == uid && validScore(request.resource.data);
+      allow update: if schoolUser() && request.auth.uid == uid && validScore(request.resource.data)
+        && request.resource.data.get('puzzle', 99999) <= resource.data.get('puzzle', 99999)
+        && request.resource.data.get('coin', -1) >= resource.data.get('coin', -1);
+      allow delete: if isAdmin();
+    }
+    // gameWho/{uid} { email } — 상품을 드리려고 저장. 선생님만 읽음
+    match /gameWho/{uid} {
+      allow read, delete: if isAdmin();
+      allow create, update: if schoolUser() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['email']) && request.resource.data.email == request.auth.token.email;
+    }
+
+    // config/state { open } — 투표 열기·마감, config/awards { prompt: 작품id } — 프롬프트상 (교사 관리 화면에서)
+    match /config/{doc} {
+      allow read: if true;
+      allow write: if isAdmin() && (
+        (doc == 'state' && request.resource.data.keys().hasOnly(['open']) && request.resource.data.open is bool)
+        || (doc == 'awards' && request.resource.data.keys().hasOnly(['prompt']) && request.resource.data.prompt is string && request.resource.data.prompt.size() <= 128));
+    }
+  }
+}

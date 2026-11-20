@@ -74,7 +74,34 @@
   #zone .n{font-family:var(--serif);font-weight:700;font-size:18px}
   #zone.show{opacity:1;transform:translate(-50%,0)}
   #coin-btn{left:50%;top:42%;transform:translateX(-50%);z-index:6;font-size:15px;padding:11px 18px;gap:8px;box-shadow:0 6px 20px rgba(0,0,0,.18);animation:coinIn .35s ease}
-  #coin-btn[hidden]{display:none}
+  #coin-btn[hidden],#game-btn[hidden],#g-login[hidden]{display:none}
+  #game-btn{left:50%;top:42%;transform:translateX(-50%);z-index:6;font-size:15px;padding:11px 18px;gap:8px;box-shadow:0 6px 20px rgba(0,0,0,.18);animation:coinIn .35s ease}
+  #game-btn .kbd{display:inline-grid;place-items:center;min-width:22px;height:22px;border:1px solid var(--ink);border-radius:4px;font-size:12px;font-weight:700;box-shadow:0 2px 0 var(--ink);background:#fff}
+  body.touch #game-btn .kbd{display:none}
+  #game{border:0;padding:24px 26px 20px;width:min(860px,calc(100vw - 24px));max-height:calc(100vh - 24px);overflow:auto;background:var(--paper);color:var(--ink);box-shadow:0 24px 70px rgba(0,0,0,.4)}
+  #game::backdrop{background:rgba(20,19,18,.6)}
+  #game .k{font-size:11px;letter-spacing:3px;color:var(--accent);font-weight:700}
+  #game h2{font-family:var(--serif);font-size:28px;margin:4px 0 4px}
+  #game .lead{margin:0 0 14px;color:#3d3a35;font-size:14px}
+  #game .x{float:right;width:36px;height:36px;display:grid;place-items:center;background:var(--paper);border:1px solid var(--ink);border-radius:2px;cursor:pointer;color:var(--ink)}
+  .g-body{display:grid;grid-template-columns:1fr 220px;gap:18px;align-items:start}
+  .g-stage .pz{width:100%;max-height:60vh;margin:0 auto;background:#111;position:relative}
+  .g-stage .pz img{width:100%;height:100%;object-fit:cover;display:block}
+  .pz.grid{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:2px}
+  .pz .pc{border:0;padding:0;background-image:url(art/starry.jpg);background-size:300% 300%;cursor:pointer;outline-offset:-3px}
+  .pz .pc.sel{outline:4px solid #ffd23f;outline-offset:-4px;filter:brightness(1.15)}
+  .pz.win{gap:0}
+  .g-stage .cg{width:100%;display:block;background:#20113f;border-radius:2px}
+  .g-rank h3{font-size:13px;letter-spacing:1px;margin:0 0 8px}
+  .g-rank ol{margin:0;padding-left:22px;font-size:14px;line-height:1.9}
+  .g-rank li span{display:inline-block;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:bottom}
+  .g-rank li b{float:right;font-variant-numeric:tabular-nums}
+  .g-rank li.me{color:var(--accent);font-weight:700}
+  .g-rank li.none{list-style:none;margin-left:-22px;color:var(--muted)}
+  .g-note{font-size:12px;color:var(--muted);margin:10px 0 0;line-height:1.6}
+  .g-bar{display:flex;gap:10px;align-items:center;justify-content:flex-end;flex-wrap:wrap;margin-top:14px}
+  #g-stat{margin-right:auto;font-weight:700;font-variant-numeric:tabular-nums}
+  @media (max-width:640px){ .g-body{grid-template-columns:1fr} #game{padding:18px 14px} #game h2{font-size:22px} }
   #coin-btn .kbd{display:inline-grid;place-items:center;min-width:22px;height:22px;border:1px solid var(--ink);border-radius:4px;font-size:12px;font-weight:700;box-shadow:0 2px 0 var(--ink);background:#fff}
   body.touch #coin-btn .kbd{display:none}
   @keyframes coinIn{from{opacity:0;transform:translate(-50%,8px)}}
@@ -280,6 +307,18 @@
 <div id="zone" class="hud panel" aria-live="polite"><div class="k" id="zone-k"></div><div class="n" id="zone-n"></div></div>
 <div id="toast" class="hud" aria-live="polite"></div>
 <button id="coin-btn" class="hud panel btn" hidden><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="#e0b44a" stroke="currentColor" stroke-width="1.4"/><circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="1.1"/></svg><span class="kbd">E</span> 금화 줍기</button>
+<button id="game-btn" class="hud panel btn" hidden><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="18" height="11" rx="4" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 10.5v4M6 12.5h4" stroke="currentColor" stroke-width="1.6"/><circle cx="15.5" cy="11.5" r="1.1" fill="currentColor"/><circle cx="17.5" cy="14" r="1.1" fill="currentColor"/></svg><span class="kbd">E</span> 게임 도전</button>
+<dialog id="game" aria-labelledby="g-t">
+  <button class="x" id="g-close" aria-label="게임 닫기"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="2"/></svg></button>
+  <div class="k" id="g-k"></div>
+  <h2 id="g-t"></h2>
+  <p class="lead" id="g-how"></p>
+  <div class="g-body">
+    <div class="g-stage" id="g-stage"></div>
+    <aside class="g-rank"><h3>순위 TOP 10</h3><ol id="g-rank"></ol><p class="g-note">학교 계정으로 로그인한 관람객의 최고 기록만 올라가요. 1등은 담당 선생님이 상품을 드려요.</p></aside>
+  </div>
+  <div class="g-bar"><span id="g-stat" role="status"></span><button class="btn" id="g-login" hidden>학교 계정으로 로그인하고 순위 올리기</button><button class="btn main" id="g-start">시작하기</button></div>
+</dialog>
 <div id="howto" class="hud panel" role="status" hidden>
   <div class="keys" aria-hidden="true"><span class="kc"></span><span class="kc">↑</span><span class="kc"></span><span class="kc">←</span><span class="kc">↓</span><span class="kc">→</span></div>
   <div class="tx"><b class="pc">키보드 방향키로 걸어요</b><b class="touch">왼쪽 아래 동그라미를 밀어서 걸어요</b>
@@ -334,6 +373,7 @@
     </ol></section>
     <section><h3>숨은 즐거움</h3><ul>
       <li><b>금화 찾기</b> 금화 5개가 곳곳의 바닥이나 벽 밑에 숨어 있어요. 가끔 반짝이니 잘 살펴보세요. 가까이 가서 E(폰은 '금화 줍기' 단추)를 누르면 주워져요. 다 찾으면 화면을 선생님께 보여 주세요. 지도에 없는 방도 있다는 소문이…</li>
+      <li><b>미니게임</b> 서관의 〈별이 빛나는 밤〉 앞에서는 <b>명화 퍼즐</b>, 복도의 〈보너스 스테이지〉 앞에서는 <b>금화 60초 모으기</b>를 할 수 있어요. 액자 앞에서 E(폰은 단추). 게임마다 1등에게 상품이 있어요 (학교 계정 로그인 필요).</li>
       <li><b>쉬어 가기</b> 의자 가까이에서 '앉아서 쉬기'를 누르면 앉아서 둘러볼 수 있어요.</li>
       <li><b>함께 관람</b> 다른 관람객이 캐릭터로 보이고, '말 걸기'로 인사할 수 있어요.</li>
     </ul></section>
@@ -356,6 +396,7 @@
   <ul>
     <li><b>무엇을 받나요?</b> 투표할 때 학교 구글 계정으로 로그인합니다. 로그인 기록(이메일)은 한 사람이 스티커를 3장만 붙이도록 확인하는 데에만 쓰입니다.</li>
     <li><b>투표 기록에는?</b> 스티커를 붙인 작품 번호와 체험한 작품 번호만 저장됩니다. 이름·이메일은 투표 기록에 들어가지 않습니다.</li>
+    <li><b>미니게임 기록</b> 로그인한 상태로 게임을 하면 닉네임과 최고 기록이 순위표에 올라가 누구나 볼 수 있습니다. 상품을 드리려고 학교 이메일을 따로 저장하며, 이메일은 담당 선생님만 볼 수 있습니다.</li>
     <li><b>닉네임·배지</b>는 이 기기에 저장됩니다. 관람하는 동안에는 다른 관람객에게 보이도록 닉네임·배지·위치가 실시간 서버에 잠시 올라가고, 전시장을 나가면 바로 지워집니다. 말 걸기는 정해진 문구만 쓸 수 있습니다.</li>
     <li><b>어디에, 언제까지?</b> 담당 교사가 관리하는 Firebase(구글 클라우드)에 저장되며, 시상이 끝나면 모두 지웁니다.</li>
     <li><b>지우고 싶다면?</b> 전시를 운영하는 담당 선생님께 요청하면 바로 지워 드립니다. 이 기기의 기록은 아래 버튼으로 지울 수 있습니다.</li>
@@ -382,7 +423,7 @@ const CONFIG = {
   STAMPS_NEEDED: 3,     // 투표권이 열리는 스탬프 수
   STAMP_SECONDS: 8,     // 한 작품을 이만큼(초) 써 봐야 스탬프
 };
-const VERSION = 'v3.0';
+const VERSION = 'v3.1';
 
 // ───────────── 전시장 평면도 (한 칸 = 3m) ─────────────
 // # 벽  . 바닥  S 입구  B 작품(벽에 걸림)  T 금화  R 순위판  W 전시 제목 벽
@@ -1021,6 +1062,21 @@ for (const f of freeFaces) {
   }
 }
 
+const GAMES = {
+  puzzle: { key: 'starry', field: 'puzzle', asc: true, title: '명화 퍼즐', k: 'MINI GAME · 빨리 맞출수록 1등',
+    how: '섞인 조각 두 개를 차례로 누르면 자리가 바뀌어요. 〈별이 빛나는 밤〉을 가장 빨리 원래대로 맞춘 사람이 1등!' },
+  coin: { key: 'pop_game', field: 'coin', asc: false, title: '금화 60초 모으기', k: 'MINI GAME · 많이 모을수록 1등',
+    how: '60초 동안 떨어지는 금화를 받아요. 큰 금화는 3개, 폭탄에 맞으면 3개를 잃어요. ← → 키나 화면을 끌어서 움직여요.' },
+};
+for (const g of Object.values(GAMES)) { // 게임 액자 위 안내판
+  const sp = artSpots.find(a => a.key === g.key); if (!sp) continue;
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(1.3, .3), new THREE.MeshBasicMaterial({ map: canvasTex(650, 150, (c, w, h) => {
+    c.fillStyle = '#1b1a18'; c.fillRect(0, 0, w, h); c.fillStyle = '#e8c79a'; c.font = '700 26px Pretendard, sans-serif'; c.textAlign = 'center';
+    c.fillText('MINI GAME · 1등 도전', w / 2, 46); c.fillStyle = '#fff'; c.font = '800 54px Pretendard, sans-serif'; c.fillText(g.title, w / 2, 112);
+  }) }));
+  m.position.set(sp.x + sp.dx * .03, 2.62, sp.z + sp.dz * .03); m.rotation.y = Math.atan2(sp.dx, sp.dz); scene.add(m);
+}
+
 { // 중앙 홀: 흰 좌대 위의 대리석 조각
   const x = 15 * S, z = 7 * S; // 중앙 홀 한가운데
   const plinth = new THREE.Mesh(new THREE.BoxGeometry(1.1, 1.0, 1.1), new THREE.MeshStandardMaterial({ color: '#f4f1eb', roughness: .7 }));
@@ -1376,9 +1432,9 @@ function say(i) {
 // ───────────── 입력 ─────────────
 const keys = new Set();
 addEventListener('keydown', e => {
-  if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') return;
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON' || $('game').open) return;
   keys.add(e.code); if (e.code.startsWith('Arrow')) e.preventDefault();
-  if (e.code === 'KeyE' && state === 'play' && !pickCoin()) stepToggle(); // 금화가 가까우면 줍기가 먼저
+  if (e.code === 'KeyE' && state === 'play' && !pickCoin() && !openGame()) stepToggle(); // 금화 줍기 → 게임 → 작품 순서
 });
 addEventListener('keyup', e => keys.delete(e.code));
 addEventListener('blur', () => keys.clear());
@@ -1527,6 +1583,152 @@ function openBrochure() { $('br-map').innerHTML = brochureMap(); $('brochure').s
 $('guide-btn').onclick = openBrochure; $('entry-brochure').onclick = openBrochure;
 $('br-close').onclick = () => $('brochure').close();
 $('brochure').addEventListener('click', e => { if (e.target === $('brochure')) $('brochure').close(); }); // 바깥 누르면 닫힘
+// ───────────── 미니게임: 명화 퍼즐 · 금화 60초 모으기 ─────────────
+// 각자 자기 기기에서 따로 돌아가서 여러 명이 동시에 할 수 있다. 학교 계정으로 로그인하면 최고 기록이 gameScores/{uid}에 올라간다.
+// gameScores/{uid} = { nick, puzzle(초), coin(개), at } (닉네임·기록만, 누구나 볼 수 있음) · gameWho/{uid} = { email } (상품 주려고 선생님만 봄)
+for (const g of Object.values(GAMES)) g.spot = artSpots.find(a => a.key === g.key);
+const nearGameOf = () => Object.values(GAMES).find(g => g.spot && Math.hypot(g.spot.x + g.spot.dx * 1.3 - player.pos.x, g.spot.z + g.spot.dz * 1.3 - player.pos.z) < 1.7) || null;
+let nearGame = null, curGame = null, gameRun = null, lastScore = null;
+const best = k => store.get('expo.best.' + k, null);
+const fmt = (g, v) => g.asc ? v.toFixed(1) + '초' : v + '개';
+const better = (g, a, b) => b == null || (g.asc ? a < b : a > b);
+function gStat(t) { $('g-stat').textContent = t; }
+function openGame() {
+  const g = nearGame; if (!g) return false;
+  curGame = g; keys.clear(); lastScore = null;
+  $('g-k').textContent = g.k; $('g-t').textContent = g.title; $('g-how').textContent = g.how;
+  $('g-start').textContent = '시작하기'; $('g-start').disabled = false; $('g-login').hidden = true;
+  const b = best(g.field); gStat(b == null ? '아직 기록이 없어요' : `내 최고 기록 ${fmt(g, b)}`);
+  g.idle(); loadRank(g);
+  $('game').showModal(); $('g-start').focus();
+  return true;
+}
+function closeGame() { gameRun?.stop(); gameRun = null; $('game').close(); }
+$('game').addEventListener('close', () => { gameRun?.stop(); gameRun = null; keys.clear(); });
+$('g-close').onclick = closeGame;
+$('g-start').onclick = () => { if (gameRun) return; $('g-start').disabled = true; $('g-login').hidden = true; curGame.start(); };
+$('g-login').onclick = async () => { await login(); if (vote.user && lastScore != null) await saveScore(curGame, lastScore); };
+$('game-btn').onclick = openGame;
+async function finishGame(g, v) {
+  gameRun = null; lastScore = v;
+  const b = best(g.field), nb = better(g, v, b);
+  if (nb) store.set('expo.best.' + g.field, v);
+  gStat(`기록 ${fmt(g, v)}` + (nb ? ' · 내 최고 기록!' : ` · 내 최고 ${fmt(g, b)}`));
+  $('g-start').textContent = '다시 하기'; $('g-start').disabled = false;
+  if (vote.user && !vote.demo) await saveScore(g, v);
+  else { $('g-login').hidden = vote.demo; if (!vote.demo) gStat($('g-stat').textContent + ' · 학교 계정으로 로그인하면 순위에 올라가요'); }
+  $('g-start').focus();
+}
+async function saveScore(g, v) {
+  if (vote.demo || !vote.user || !fb) return;
+  const { fs } = fb, ref = fs.doc(fb.D, 'gameScores', vote.user.uid);
+  try {
+    const cur = (await fs.getDoc(ref)).data() || {};
+    if (!better(g, v, cur[g.field])) return; // 서버 기록이 더 좋으면 그대로
+    const d = { nick: player.nick.slice(0, 10), at: Date.now() };
+    for (const k of ['puzzle', 'coin']) if (cur[k] != null) d[k] = cur[k];
+    d[g.field] = v;
+    await fs.setDoc(ref, d);
+    await fs.setDoc(fs.doc(fb.D, 'gameWho', vote.user.uid), { email: vote.user.email });
+    $('g-login').hidden = true; loadRank(g);
+  } catch (e) { console.warn('score', e); toast('기록을 올리지 못했어요'); }
+}
+async function loadRank(g) {
+  const ol = $('g-rank');
+  if (vote.demo || !fb) { ol.innerHTML = '<li class="none">체험 모드에서는 순위를 저장하지 않아요</li>'; return; }
+  try {
+    const { fs } = fb;
+    const snap = await fs.getDocs(fs.query(fs.collection(fb.D, 'gameScores'), fs.orderBy(g.field, g.asc ? 'asc' : 'desc'), fs.limit(10)));
+    ol.innerHTML = snap.empty ? '<li class="none">첫 기록의 주인공이 되어 보세요</li>'
+      : snap.docs.map(d => `<li${d.id === vote.user?.uid ? ' class="me"' : ''}><span>${esc(d.data().nick)}</span><b>${fmt(g, d.data()[g.field])}</b></li>`).join('');
+  } catch (e) { console.warn('rank', e); ol.innerHTML = '<li class="none">순위를 불러오지 못했어요</li>'; }
+}
+
+// ── 1. 명화 퍼즐: 3×3 조각 중 두 개를 차례로 누르면 자리가 바뀐다. 다 맞추는 시간이 기록 ──
+GAMES.puzzle.idle = () => {
+  const r = ART_RATIO.starry, st = $('g-stage');
+  st.innerHTML = `<div class="pz" style="aspect-ratio:${r}"><img src="art/starry.jpg" alt="별이 빛나는 밤 (빈센트 반 고흐) 완성 그림"></div>`;
+};
+GAMES.puzzle.start = () => {
+  const N = 3, r = ART_RATIO.starry, st = $('g-stage');
+  let order; do { order = [...Array(N * N).keys()].sort(() => Math.random() - .5); } while (order.some((v, i) => v === i)); // 제자리 조각 없이 섞기
+  st.innerHTML = `<div class="pz grid" style="aspect-ratio:${r}" role="group" aria-label="퍼즐 조각 9개"></div>`;
+  const box = st.firstChild; let pick = null, t0 = performance.now(), timer, done = false;
+  const draw = () => {
+    box.innerHTML = order.map((v, i) => `<button class="pc${pick === i ? ' sel' : ''}${v === i ? ' ok' : ''}" data-i="${i}" aria-label="${i + 1}번 자리 조각${v === i ? ' (맞음)' : ''}"
+      style="background-position:${(v % N) * 50}% ${Math.floor(v / N) * 50}%"></button>`).join('');
+  };
+  box.onclick = e => {
+    const b = e.target.closest('.pc'); if (!b || done) return; const i = +b.dataset.i;
+    if (pick === null) pick = i;
+    else { if (pick !== i) [order[pick], order[i]] = [order[i], order[pick]]; pick = null; }
+    draw(); box.querySelector(`[data-i="${i}"]`).focus();
+    if (order.every((v, k) => v === k)) { done = true; clearInterval(timer); const t = Math.round((performance.now() - t0) / 100) / 10; box.classList.add('win'); finishGame(GAMES.puzzle, Math.max(3, t)); }
+  };
+  draw(); box.querySelector('.pc').focus();
+  timer = setInterval(() => gStat(`${((performance.now() - t0) / 1000).toFixed(1)}초`), 100);
+  gameRun = { stop() { clearInterval(timer); done = true; } };
+};
+
+// ── 2. 금화 60초 모으기: 떨어지는 금화는 받고 폭탄은 피한다 ──
+const CW = 480, CH = 360, STARS = Array.from({ length: 40 }, () => [Math.random() * CW, Math.random() * CH * .7]); // 별 자리는 한 번만 정한다
+function coinScene(g, items, x, flash) {
+  g.fillStyle = '#20113f'; g.fillRect(0, 0, CW, CH);
+  STARS.forEach(([sx, sy], i) => { g.fillStyle = i % 3 ? '#8f86c9' : '#fff'; g.fillRect(sx, sy, 3, 3); });
+  g.fillStyle = '#3ddc84'; g.fillRect(0, CH - 34, CW, 34); g.fillStyle = '#2bb56a'; for (let k = 0; k < CW; k += 32) g.fillRect(k, CH - 34, 16, 8);
+  for (const it of items) {
+    if (it.type === 'bomb') { g.fillStyle = '#111'; g.beginPath(); g.arc(it.x, it.y, 13, 0, 7); g.fill(); g.strokeStyle = '#ff9f43'; g.lineWidth = 3; g.beginPath(); g.moveTo(it.x + 6, it.y - 11); g.lineTo(it.x + 11, it.y - 18); g.stroke(); g.fillStyle = '#ffd23f'; g.fillRect(it.x + 10, it.y - 22, 4, 4); }
+    else { const R = it.type === 'big' ? 17 : 11; g.fillStyle = '#ffd23f'; g.beginPath(); g.arc(it.x, it.y, R, 0, 7); g.fill(); g.fillStyle = '#f0a500'; g.fillRect(it.x - 2, it.y - R * .6, 4, R * 1.2);
+      if (it.type === 'big') { g.strokeStyle = '#fff'; g.lineWidth = 2; g.beginPath(); g.arc(it.x, it.y, R + 4, 0, 7); g.stroke(); } }
+  }
+  px(g, ['..YYYY..', '.YYYYYY.', 'YYKYYKYY', 'YYYYYYYY', '.YYYYYY.', '..Y..Y..'], { Y: '#ffd23f', K: '#1b1a18' }, x - 24, CH - 34 - 36, 6);
+  if (flash > 0) { g.fillStyle = `rgba(255,60,80,${flash * .5})`; g.fillRect(0, 0, CW, CH); }
+}
+GAMES.coin.idle = () => {
+  $('g-stage').innerHTML = `<canvas class="cg" width="${CW}" height="${CH}" role="img" aria-label="금화 모으기 게임 화면"></canvas>`;
+  const g = $('g-stage').firstChild.getContext('2d');
+  coinScene(g, [{ x: 120, y: 120, type: 'coin' }, { x: 260, y: 80, type: 'big' }, { x: 360, y: 170, type: 'bomb' }, { x: 300, y: 230, type: 'coin' }], CW / 2, 0);
+  g.fillStyle = '#fff'; g.textAlign = 'center'; g.font = '800 22px Pretendard, sans-serif'; g.fillText('← → 키 또는 화면을 끌어서 움직여요', CW / 2, 40);
+};
+GAMES.coin.start = () => {
+  GAMES.coin.idle();
+  const cv = $('g-stage').firstChild, g = cv.getContext('2d'), T = 60;
+  let x = CW / 2, items = [], score = 0, t = -3, spawn = 0, flash = 0, last = performance.now(), raf, ptr = null, alive = true;
+  const k = new Set();
+  const kd = e => { if (['ArrowLeft', 'ArrowRight', 'KeyA', 'KeyD'].includes(e.code)) { k.add(e.code); e.preventDefault(); } }, ku = e => k.delete(e.code);
+  const pm = e => { const b = cv.getBoundingClientRect(); ptr = (e.clientX - b.left) / b.width * CW; };
+  $('game').addEventListener('keydown', kd); $('game').addEventListener('keyup', ku);
+  cv.addEventListener('pointerdown', pm); cv.addEventListener('pointermove', e => { if (e.buttons || e.pointerType !== 'mouse') pm(e); });
+  cv.style.touchAction = 'none'; cv.tabIndex = 0; cv.focus();
+  const step = now => {
+    if (!alive) return;
+    const dt = Math.min(.05, (now - last) / 1000); last = now; t += dt;
+    if (t >= 0) {
+      const p = t / T; // 시간이 갈수록 빨라진다
+      if ((spawn -= dt) < 0) { spawn = .6 - .35 * p; const r = Math.random(); items.push({ x: 20 + Math.random() * (CW - 40), y: -20, v: 130 + 190 * p + Math.random() * 40, type: r < .14 + .1 * p ? 'bomb' : r > .93 ? 'big' : 'coin' }); }
+      const dir = (k.has('ArrowRight') || k.has('KeyD')) - (k.has('ArrowLeft') || k.has('KeyA'));
+      if (dir) { x += dir * 330 * dt; ptr = null; } else if (ptr != null) x += Math.sign(ptr - x) * Math.min(Math.abs(ptr - x), 520 * dt);
+      x = Math.max(24, Math.min(CW - 24, x));
+      for (const it of items) it.y += it.v * dt;
+      items = items.filter(it => {
+        if (it.y > CH - 76 && it.y < CH - 30 && Math.abs(it.x - x) < 34) {
+          if (it.type === 'bomb') { score = Math.max(0, score - 3); flash = 1; } else score += it.type === 'big' ? 3 : 1;
+          return false;
+        }
+        return it.y < CH;
+      });
+      flash = Math.max(0, flash - dt * 2.5);
+    }
+    coinScene(g, items, x, flash);
+    g.fillStyle = '#fff'; g.font = '800 20px monospace'; g.textAlign = 'left'; g.fillText(`금화 ${score}`, 14, 30); g.textAlign = 'right'; g.fillText(`${Math.max(0, Math.ceil(T - Math.max(t, 0)))}초`, CW - 14, 30);
+    if (t < 0) { g.textAlign = 'center'; g.font = '900 72px Pretendard, sans-serif'; g.fillText(Math.ceil(-t), CW / 2, CH / 2); }
+    gStat(t < 0 ? '준비…' : `남은 시간 ${Math.max(0, Math.ceil(T - t))}초 · 금화 ${score}개`);
+    if (t >= T) { gameRun.stop(); finishGame(GAMES.coin, Math.min(400, score)); return; }
+    raf = requestAnimationFrame(step);
+  };
+  raf = requestAnimationFrame(step);
+  gameRun = { stop() { alive = false; cancelAnimationFrame(raf); $('game').removeEventListener('keydown', kd); $('game').removeEventListener('keyup', ku); } };
+};
 $('coin-btn').onclick = pickCoin;
 $('help-btn').onclick = () => { const h = $('help'), open = h.style.display !== 'block'; h.style.display = open ? 'block' : 'none'; $('help-btn').setAttribute('aria-expanded', open); };
 
@@ -1826,6 +2028,8 @@ function update(dt) {
     // 금화: 가까이 가면 줍기 단추
     const nc = focus ? null : treasures.find(tr => Math.hypot(tr.gem.position.x - player.pos.x, tr.gem.position.z - player.pos.z) < 2) || null;
     if (nc !== nearCoin) { nearCoin = nc; $('coin-btn').hidden = !nc; }
+    const ng = focus || nc ? null : nearGameOf(); // 게임 액자 앞: 'E 게임하기' 단추
+    if (ng !== nearGame) { nearGame = ng; $('game-btn').hidden = !ng; if (ng) $('game-btn').lastChild.textContent = ` ${ng.title} 도전`; }
     // 의자 가까이인지
     // 벤치는 길쭉하다(1.8×0.5m) → 가운데가 아니라 벤치 가장자리에서 1m 안이면 '가까이'
     const nb = benches.find(b => Math.hypot(Math.max(Math.abs(player.pos.x - b.x) - .9, 0), Math.max(Math.abs(player.pos.z - b.z) - .25, 0)) < 1) || null;
